@@ -1,37 +1,13 @@
 import java.io.File
-import java.io.BufferedReader
-import kotlinx.coroutines.*
 
 data class Patient(val pregnancies: Int, val glucose: Int, val bloodPressure: Int, val skinThickness: Int, val insulin: Int, val bmi: Double, val diabetesPedigreeFunction: Double, val age: Int, val outcome: Int)
-val N : Int = 5
+val N : Int = 10
 
-fun KNN(newPatient: Patient) = runBlocking {
+fun distance(patient1: Patient, patient2: Patient): Double {
+    return Math.sqrt(Math.pow((patient1.pregnancies - patient2.pregnancies).toDouble(), 2.0) + Math.pow((patient1.glucose - patient2.glucose).toDouble(), 2.0) + Math.pow((patient1.bloodPressure - patient2.bloodPressure).toDouble(), 2.0) + Math.pow((patient1.skinThickness - patient2.skinThickness).toDouble(), 2.0) + Math.pow((patient1.insulin - patient2.insulin).toDouble(), 2.0) + Math.pow((patient1.bmi - patient2.bmi).toDouble(), 2.0) + Math.pow((patient1.diabetesPedigreeFunction - patient2.diabetesPedigreeFunction).toDouble(), 2.0) + Math.pow((patient1.age - patient2.age).toDouble(), 2.0))
+}
 
-        // to a single "core", let's call it "Main Core"
-        launch { // Start another "thread" pinned to "Main Core". The "thread" is
-            // in a suspended state, waiting for "Main Core" to get free
-            println("in sub coroutine ${Thread.currentThread().name}")
-        }
-        // `launch` is just a function, it completed after creating the new "thread",
-        //  move on to the code below it
-        println("before coroutine in main ${Thread.currentThread().name}")
-        // Start a context where "threads" are pinned to another "core", the
-        // "IO Core". It executes its "threads" concurrently to "Main Core".
-        // However, the particular "thread" that creates the context gets suspended
-        // until it is done. Other "threads" pinned to "Main Core" can run.
-        withContext(Dispatchers.IO) {
-            println("hello from coroutine ${Thread.currentThread().name}")
-            delay(1500)
-            println("hello from coutoutine after delay ${Thread.currentThread().name}")
-        }
-        // Now the "thread" that created the "IO Core" context can go on.
-        println("after coroutine in main ${Thread.currentThread().name}")
-
-    }
-
-
-
-fun main() {
+fun KNN(newPatient: Patient) {
     val inputString = File("src/main/kotlin/diabetes.csv").readText()
     val patients = mutableListOf<Patient>()
     val lines = inputString.split("\n")
@@ -40,10 +16,34 @@ fun main() {
         if (values[0] != "Pregnancies" && line != lines.last() && values != emptyArray<String>()) {
             val patient = Patient(values[0].toInt(), values[1].toInt(), values[2].toInt(), values[3].toInt(), values[4].toInt(), values[5].toDouble(), values[6].toDouble(), values[7].toInt(), values[8][0].code - 48)
             patients.add(patient)
-            println(patient)
         }
     }
-    println()
-    KNN(patients[0])
+    val distances = mutableListOf<Double>()
+    for (patient in patients) {
+        distances.add(distance(newPatient, patient))
+    }
+    val sortedDistances = distances.sorted()
+    val kNearest = mutableListOf<Patient>()
+    for (i in 0 until N) {
+        kNearest.add(patients[distances.indexOf(sortedDistances[i])])
+    }
+    var positive = 0
+    var negative = 0
+    for (patient in kNearest) {
+        if (patient.outcome == 1) {
+            positive++
+        } else {
+            negative++
+        }
+    }
+    if (positive > negative) {
+        println("diabetes")
+    } else {
+        println("no diabetes")
+    }
 }
-//    logger.quiet("An info log message which is always logged.")
+
+fun main() {
+    KNN(Patient(0, 100, 62, 35, 3, 33.6, 0.627, 25, -1))
+    KNN(Patient(6, 120, 72, 32, 0, 30.3, 0.598, 50, -1))
+}
