@@ -1,10 +1,10 @@
 import java.io.File
-
 data class Patient(val pregnancies: Int, val glucose: Int, val bloodPressure: Int, val skinThickness: Int, val insulin: Int, val bmi: Double, val diabetesPedigreeFunction: Double, val age: Int, val outcome: Int)
 val N : Int = 10
 
 fun distance(patient1: Patient, patient2: Patient): Double {
-    return Math.sqrt(Math.pow((patient1.pregnancies - patient2.pregnancies).toDouble(), 2.0) + Math.pow((patient1.glucose - patient2.glucose).toDouble(), 2.0) + Math.pow((patient1.bloodPressure - patient2.bloodPressure).toDouble(), 2.0) + Math.pow((patient1.skinThickness - patient2.skinThickness).toDouble(), 2.0) + Math.pow((patient1.insulin - patient2.insulin).toDouble(), 2.0) + Math.pow((patient1.bmi - patient2.bmi).toDouble(), 2.0) + Math.pow((patient1.diabetesPedigreeFunction - patient2.diabetesPedigreeFunction).toDouble(), 2.0) + Math.pow((patient1.age - patient2.age).toDouble(), 2.0))
+    return Math.sqrt(Math.pow((patient1.pregnancies - patient2.pregnancies).toDouble(), 2.0) + Math.pow((patient1.glucose - patient2.glucose).toDouble(), 2.0) +
+            Math.pow((patient1.bloodPressure - patient2.bloodPressure).toDouble(), 2.0) + Math.pow((patient1.skinThickness - patient2.skinThickness).toDouble(), 2.0) + Math.pow((patient1.insulin - patient2.insulin).toDouble(), 2.0) + Math.pow((patient1.bmi - patient2.bmi).toDouble(), 2.0) + Math.pow((patient1.diabetesPedigreeFunction - patient2.diabetesPedigreeFunction).toDouble(), 2.0) + Math.pow((patient1.age - patient2.age).toDouble(), 2.0))
 }
 
 fun KNN(newPatient: Patient) {
@@ -18,11 +18,12 @@ fun KNN(newPatient: Patient) {
             patients.add(patient)
         }
     }
+    //println(patients)
     val distances = mutableListOf<Double>()
     for (patient in patients) {
         distances.add(distance(newPatient, patient))
     }
-    val sortedDistances = distances.sorted()
+    val sortedDistances = distances.sortedBy{it}
     val kNearest = mutableListOf<Patient>()
     for (i in 0 until N) {
         kNearest.add(patients[distances.indexOf(sortedDistances[i])])
@@ -45,5 +46,8 @@ fun KNN(newPatient: Patient) {
 
 fun main() {
     KNN(Patient(0, 100, 62, 35, 3, 33.6, 0.627, 25, -1))
-    KNN(Patient(6, 120, 72, 32, 0, 30.3, 0.598, 50, -1))
+    KNN(Patient(6, 120, 72, 32, 0, 30.3, 0.598, 50, 1))
 }
+
+
+
