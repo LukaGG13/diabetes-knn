@@ -1,7 +1,7 @@
 import kotlinx.coroutines.*
 import java.io.File
 data class Patient(val pregnancies: Int, val glucose: Int, val bloodPressure: Int, val skinThickness: Int, val insulin: Int, val bmi: Double, val diabetesPedigreeFunction: Double, val age: Int, val outcome: Int)
-val N : Int = 10
+val N : Int = 9
 
 suspend fun distance(patient1: Patient, patient2: Patient): Double = coroutineScope {
     return@coroutineScope Math.sqrt(Math.pow((patient1.pregnancies - patient2.pregnancies).toDouble(), 2.0) + Math.pow((patient1.glucose - patient2.glucose).toDouble(), 2.0) +
