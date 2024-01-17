@@ -1,3 +1,5 @@
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import java.io.File
 data class Patient(val pregnancies: Int, val glucose: Int, val bloodPressure: Int, val skinThickness: Int, val insulin: Int, val bmi: Double, val diabetesPedigreeFunction: Double, val age: Int, val outcome: Int)
 val N : Int = 10
@@ -7,7 +9,7 @@ fun distance(patient1: Patient, patient2: Patient): Double {
             Math.pow((patient1.bloodPressure - patient2.bloodPressure).toDouble(), 2.0) + Math.pow((patient1.skinThickness - patient2.skinThickness).toDouble(), 2.0) + Math.pow((patient1.insulin - patient2.insulin).toDouble(), 2.0) + Math.pow((patient1.bmi - patient2.bmi).toDouble(), 2.0) + Math.pow((patient1.diabetesPedigreeFunction - patient2.diabetesPedigreeFunction).toDouble(), 2.0) + Math.pow((patient1.age - patient2.age).toDouble(), 2.0))
 }
 
-fun KNN(newPatient: Patient) {
+suspend fun KNN(newPatient: Patient) = coroutineScope {
     val inputString = File("src/main/kotlin/diabetes.csv").readText()
     val patients = mutableListOf<Patient>()
     val lines = inputString.split("\n")
@@ -44,10 +46,9 @@ fun KNN(newPatient: Patient) {
     }
 }
 
-fun main() {
+fun main() = runBlocking {
     KNN(Patient(0, 100, 62, 35, 3, 33.6, 0.627, 25, -1))
     KNN(Patient(6, 120, 72, 32, 0, 30.3, 0.598, 50, 1))
 }
-
 
 
